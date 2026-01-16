@@ -10,7 +10,7 @@ interface BookListProps {
 type ViewMode = 'grid' | 'list';
 
 export function BookList({ onDelete }: BookListProps) {
-  const [viewMode, setViewMode] = useState<ViewMode>('grid');
+  const [viewMode, setViewMode] = useState<ViewMode>('list');
   const [selectedBook, setSelectedBook] = useState<Book | null>(null);
 
   const books = useLiveQuery(() =>
