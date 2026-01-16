@@ -1,4 +1,5 @@
 import { useLiveQuery } from 'dexie-react-hooks';
+import { useState } from 'react';
 import { db, Book } from '../db';
 
 interface BookListProps {
@@ -52,21 +53,34 @@ export function BookList({ onDelete }: BookListProps) {
 }
 
 function BookCard({ book, onDelete }: { book: Book; onDelete: (isbn: string) => void }) {
+  const [imageError, setImageError] = useState(false);
+
   const handleDelete = () => {
     if (window.confirm(`「${book.title}」を削除しますか?`)) {
       onDelete(book.isbn);
     }
   };
 
+  // 日付を日本語形式でフォーマット
+  const formatDate = (date: Date) => {
+    const d = new Date(date);
+    const year = d.getFullYear();
+    const month = d.getMonth() + 1;
+    const day = d.getDate();
+    return `${year}年${month}月${day}日`;
+  };
+
   return (
     <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
       <div className="aspect-[3/4] bg-gray-200 relative">
-        {book.coverImage ? (
+        {book.coverImage && !imageError ? (
           <img
             src={book.coverImage}
             alt={book.title}
             className="w-full h-full object-cover"
             loading="lazy"
+            onError={() => setImageError(true)}
+            crossOrigin="anonymous"
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center">
@@ -89,7 +103,8 @@ function BookCard({ book, onDelete }: { book: Book; onDelete: (isbn: string) => 
       <div className="p-3">
         <h3 className="font-semibold text-sm line-clamp-2 mb-1">{book.title}</h3>
         <p className="text-xs text-gray-600 line-clamp-1 mb-2">{book.author}</p>
-        <p className="text-xs text-gray-400 mb-3">ISBN: {book.isbn}</p>
+        <p className="text-xs text-gray-400 mb-1">ISBN: {book.isbn}</p>
+        <p className="text-xs text-gray-400 mb-3">📅 {formatDate(book.addedAt)}</p>
         <button
           onClick={handleDelete}
           className="w-full py-2 px-3 bg-red-500 hover:bg-red-600 text-white text-sm rounded-md transition-colors active:bg-red-700"

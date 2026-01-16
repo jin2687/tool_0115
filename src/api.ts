@@ -17,6 +17,15 @@ interface OpenBDResponse {
         };
       }>;
     };
+    CollateralDetail?: {
+      SupportingResource?: Array<{
+        ResourceContentType?: string;
+        ResourceMode?: string;
+        ResourceVersion?: Array<{
+          ResourceLink?: string;
+        }>;
+      }>;
+    };
   };
   summary?: {
     isbn?: string;
@@ -57,11 +66,24 @@ export async function fetchBookInfo(isbn: string): Promise<Book | null> {
       onix?.DescriptiveDetail?.Contributor?.[0]?.PersonName?.content ||
       '不明な著者';
 
+    // 画像URLを取得（SupportingResourceから）
+    let coverImage = '';
+    const resources = onix?.CollateralDetail?.SupportingResource;
+    if (resources && resources.length > 0) {
+      // 表紙画像を探す（ResourceContentType: '01' = Front cover）
+      const coverResource = resources.find(
+        (r) => r.ResourceContentType === '01' || r.ResourceMode === '03'
+      );
+      if (coverResource && coverResource.ResourceVersion?.[0]?.ResourceLink) {
+        coverImage = coverResource.ResourceVersion[0].ResourceLink;
+      }
+    }
+
     return {
       isbn,
       title,
       author,
-      coverImage: '',
+      coverImage,
       addedAt: new Date(),
     };
   } catch (error) {
