@@ -6,6 +6,8 @@ export interface Book {
   author: string;
   coverImage: string;
   addedAt: Date;
+  comment?: string;
+  description?: string;
 }
 
 export class BooksDatabase extends Dexie {
