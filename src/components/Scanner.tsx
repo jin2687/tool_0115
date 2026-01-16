@@ -35,13 +35,13 @@ export function Scanner({ onScan, onClose }: ScannerProps) {
         await scanner.start(
           cameraId,
           {
-            fps: 10,
-            qrbox: { width: 250, height: 250 },
-            aspectRatio: 1.0,
+            fps: 20,
+            qrbox: { width: 300, height: 150 },
+            aspectRatio: 2.0,
           },
           (decodedText) => {
             // ISBN-10 or ISBN-13 format detection
-            const isbn = decodedText.replace(/[^0-9]/g, '');
+            const isbn = decodedText.replace(/[^0-9Xx]/g, '');
             if (isbn.length === 10 || isbn.length === 13) {
               onScan(isbn);
               stopScanner();
@@ -115,7 +115,8 @@ export function Scanner({ onScan, onClose }: ScannerProps) {
             )}
             {isScanning && !error && (
               <div className="mt-4 text-white text-center">
-                <p className="text-sm">バーコードをカメラに向けてください</p>
+                <p className="text-sm">書籍裏表紙のISBNバーコードを</p>
+                <p className="text-sm">横向きでスキャンしてください</p>
               </div>
             )}
           </div>
